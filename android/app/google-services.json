@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1060182158067",
+    "project_id": "checkout-19b80",
+    "storage_bucket": "checkout-19b80.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1060182158067:android:d86c1929a43b8216d1a586",
+        "android_client_info": {
+          "package_name": "com.example.checkout"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqzrfqTcPZpGKwGwxzwe4HWYTGmuapgTc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
