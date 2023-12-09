@@ -1,4 +1,5 @@
 import 'package:checkout/utils/constants/app_colors.dart';
+import 'package:checkout/utils/constants/app_images.dart';
 import 'package:checkout/utils/constants/app_texts.dart';
 import 'package:checkout/utils/widgets/button.dart';
 import 'package:checkout/views/auth/widgets/textformfield_widget.dart';
@@ -82,8 +83,8 @@ class LoginPage extends StatelessWidget {
                       child: SizedBox(
                         width: 60,
                         height: 60,
-                        child: Image.network(
-                          'http://pngimg.com/uploads/google/google_PNG19635.png',
+                        child: Image.asset(
+                          AppImages.google,
                           fit: BoxFit.cover,
                         ),
                       ),

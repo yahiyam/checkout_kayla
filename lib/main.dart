@@ -1,5 +1,6 @@
 import 'package:checkout/utils/constants/app_colors.dart';
 import 'package:checkout/viewmodels/auth_viewmodel.dart';
+import 'package:checkout/viewmodels/base_viewmodel.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ void main(List<String> args) async {
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (context) => Obscure()),
       ChangeNotifierProvider(create: (context) => PhoneProvider()),
+      ChangeNotifierProvider(create: (context) => AuthProvider()),
     ], child: const CheckoutApp()),
   );
 }

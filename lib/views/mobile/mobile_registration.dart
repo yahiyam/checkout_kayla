@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../viewmodels/auth_viewmodel.dart';
+import '../../viewmodels/base_viewmodel.dart';
 
 class MobileRegistration extends StatelessWidget {
   const MobileRegistration({super.key});
@@ -11,6 +12,13 @@ class MobileRegistration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final phoneProvider = Provider.of<PhoneProvider>(context);
+    
+    void sendPhoneNumber() {
+      final ap = Provider.of<AuthProvider>(context, listen: false);
+      String phoneNumber = phoneProvider.controller.text.trim();
+      ap.signInWithPhone(context, "+91$phoneNumber");
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -81,7 +89,11 @@ class MobileRegistration extends StatelessWidget {
               ),
               const SizedBox(height: 120),
               phoneProvider.isMaxLengthReached
-                  ? CustomButton(text: 'login', onTap: () {})
+                  ? CustomButton(
+                      text: 'login',
+                      onTap: () {
+                        sendPhoneNumber();
+                      })
                   : const SizedBox(height: 40),
             ],
           ),
