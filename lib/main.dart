@@ -1,19 +1,28 @@
+import 'package:checkout/utils/constants/app_colors.dart';
+import 'package:checkout/viewmodels/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import 'views/splash/splash_screen.dart';
 
 void main(List<String> args) {
-  runApp(const CheckoutApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => Obscure()),
+  ], child: const CheckoutApp()));
 }
 
 class CheckoutApp extends StatelessWidget {
   const CheckoutApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: SplashScreen(),
+    return MaterialApp(
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primary,
+        ),
+      ),
+      home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
-

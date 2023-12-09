@@ -1,3 +1,5 @@
+import 'package:checkout/utils/widgets/button.dart';
+import 'package:checkout/views/auth/login_page.dart';
 import 'package:flutter/material.dart';
 
 import '../../utils/constants/app_colors.dart';
@@ -34,8 +36,19 @@ class SplashScreen extends StatelessWidget {
               Images.appName,
               height: 70,
             ),
+            CustomButton(
+                text: 'Continue',
+                onTap: () {
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LoginPage(),
+                      ));
+                }),
+                
           ],
         ),
+
       ),
     );
   }
