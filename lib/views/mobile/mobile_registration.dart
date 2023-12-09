@@ -70,14 +70,11 @@ class MobileRegistration extends StatelessWidget {
                   ),
                   prefixIcon: Container(
                     padding: const EdgeInsets.all(13),
-                    child: InkWell(
-                      onTap: () {},
-                      child: const Text(
-                        " ${AppTexts.indianFlag}  +91",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    child: const Text(
+                      " ${AppTexts.indianFlag}  +91",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),

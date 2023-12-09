@@ -31,6 +31,7 @@ class CheckoutApp extends StatelessWidget {
       ),
       home: const SplashScreen(),
       debugShowCheckedModeBanner: false,
+      title: "Checkout App",
     );
   }
 }

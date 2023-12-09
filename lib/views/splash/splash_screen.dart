@@ -1,6 +1,6 @@
 import 'package:checkout/viewmodels/auth_viewmodel.dart';
 import 'package:checkout/views/auth/login_page.dart';
-import 'package:checkout/views/home/home_page.dart';
+import 'package:checkout/views/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +26,7 @@ class _SplashScreenState extends State<SplashScreen> {
             ? Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const HomePage(),
+                  builder: (context) => const HomeScreen(),
                 ),
               )
             : Navigator.pushReplacement(
