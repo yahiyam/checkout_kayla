@@ -8,6 +8,7 @@ import 'views/splash/splash_screen.dart';
 void main(List<String> args) {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => Obscure()),
+    ChangeNotifierProvider(create: (context) => PhoneProvider()),
   ], child: const CheckoutApp()));
 }
 

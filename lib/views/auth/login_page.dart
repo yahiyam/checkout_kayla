@@ -2,6 +2,7 @@ import 'package:checkout/utils/constants/app_colors.dart';
 import 'package:checkout/utils/constants/app_texts.dart';
 import 'package:checkout/utils/widgets/button.dart';
 import 'package:checkout/views/auth/widgets/textformfield_widget.dart';
+import 'package:checkout/views/mobile/mobile_registration.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -89,7 +90,11 @@ class LoginPage extends StatelessWidget {
                     ),
                     IconButton(
                       splashColor: AppColors.splash,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => const MobileRegistration(),
+                        ));
+                      },
                       icon: const Icon(
                         Icons.dialpad,
                         size: 35,
