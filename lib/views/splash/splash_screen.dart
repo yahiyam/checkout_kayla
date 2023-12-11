@@ -1,4 +1,5 @@
-import 'package:checkout/viewmodels/auth_viewmodel.dart';
+import 'package:checkout/viewmodels/auth/auth_google.dart';
+import 'package:checkout/viewmodels/auth/auth_phone.dart';
 import 'package:checkout/views/auth/login_page.dart';
 import 'package:checkout/views/home/home_screen.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../utils/constants/app_colors.dart';
 import '../../utils/constants/app_images.dart';
+import '../../utils/functions/next_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,24 +19,18 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
+    final pAP = Provider.of<AuthPhoneProvider>(context, listen: false);
+    final gAP = Provider.of<AuthGoogleProvider>(context, listen: false);
     super.initState();
     Future.delayed(
       const Duration(seconds: 2),
       () {
-        ap.isSignedIn == true
-            ? Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HomeScreen(),
-                ),
-              )
-            : Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const LoginPage(),
-                ),
-              );
+        pAP.isSignedIn == true
+            ? nextScreenReplace(context: context, page: const HomeScreen())
+            : nextScreenReplace(context: context, page: const LoginScreen());
+        gAP.isSignedIn == false
+            ? nextScreenReplace(context: context, page: const LoginScreen())
+            : nextScreenReplace(context: context, page: const HomeScreen());
       },
     );
   }

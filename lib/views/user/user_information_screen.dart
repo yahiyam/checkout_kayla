@@ -7,7 +7,7 @@ import '../../models/user_model.dart';
 import '../../utils/functions/pick_image.dart';
 import '../../utils/functions/snackbar.dart';
 import '../../utils/widgets/button.dart';
-import '../../viewmodels/auth_viewmodel.dart';
+import '../../viewmodels/auth/auth_phone.dart';
 import '../home/home_screen.dart';
 
 class UserInfromationScreen extends StatefulWidget {
@@ -40,7 +40,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading =
-        Provider.of<AuthProvider>(context, listen: true).isLoading;
+        Provider.of<AuthPhoneProvider>(context, listen: true).isLoading;
     return Scaffold(
       body: SafeArea(
         child: isLoading == true
@@ -176,7 +176,7 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
 
   // store user data to database
   void storeData() async {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
+    final ap = Provider.of<AuthPhoneProvider>(context, listen: false);
     UserModel userModel = UserModel(
       name: nameController.text.trim(),
       email: emailController.text.trim(),
@@ -192,16 +192,12 @@ class _UserInfromationScreenState extends State<UserInfromationScreen> {
         userModel: userModel,
         profilePic: image!,
         onSuccess: () {
-          ap.saveUserDataToSP().then(
-                (value) => ap.setSignIn().then(
-                      (value) => Navigator.pushAndRemoveUntil(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const HomeScreen(),
-                          ),
-                          (route) => false),
-                    ),
-              );
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const HomeScreen(),
+              ),
+              (route) => false);
         },
       );
     } else {

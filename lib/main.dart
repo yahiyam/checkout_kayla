@@ -1,5 +1,6 @@
 import 'package:checkout/utils/constants/app_colors.dart';
-import 'package:checkout/viewmodels/auth_viewmodel.dart';
+import 'package:checkout/viewmodels/auth/auth_google.dart';
+import 'package:checkout/viewmodels/auth/auth_phone.dart';
 import 'package:checkout/viewmodels/base_viewmodel.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,8 +14,11 @@ void main(List<String> args) async {
   runApp(
     MultiProvider(providers: [
       ChangeNotifierProvider(create: (context) => Obscure()),
-      ChangeNotifierProvider(create: (context) => PhoneProvider()),
-      ChangeNotifierProvider(create: (context) => AuthProvider()),
+      ChangeNotifierProvider(create: (context) => PhoneNumberProvider()),
+      ChangeNotifierProvider(create: (context) => AuthPhoneProvider()),
+      ChangeNotifierProvider(create: (context) => AuthGoogleProvider()),
+      ChangeNotifierProvider(create: (context) => InternetProvider()),
+      ChangeNotifierProvider(create: (context) => ImagesProvider()),
     ], child: const CheckoutApp()),
   );
 }

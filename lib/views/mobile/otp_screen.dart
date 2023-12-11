@@ -6,8 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../utils/widgets/button.dart';
 import '../../utils/functions/snackbar.dart';
-import '../../viewmodels/auth_viewmodel.dart';
-import '../user/user_information_screen.dart';
+import '../../viewmodels/auth/auth_phone.dart';
 
 class OtpScreen extends StatefulWidget {
   final String verificationId;
@@ -26,7 +25,7 @@ class _OtpScreenState extends State<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoading =
-        Provider.of<AuthProvider>(context, listen: true).isLoading;
+        Provider.of<AuthPhoneProvider>(context, listen: true).isLoading;
     return Scaffold(
       body: SafeArea(
         child: isLoading == true
@@ -138,7 +137,7 @@ class _OtpScreenState extends State<OtpScreen> {
 
   // verify otp
   void verifyOtp(BuildContext context, String userOtp) {
-    final ap = Provider.of<AuthProvider>(context, listen: false);
+    final ap = Provider.of<AuthPhoneProvider>(context, listen: false);
     ap.verifyOtp(
       context: context,
       verificationId: widget.verificationId,
@@ -147,28 +146,12 @@ class _OtpScreenState extends State<OtpScreen> {
         // checking whether user exists in the db
         ap.checkExistingUser().then(
           (value) async {
-            if (value == true) {
-              // user exists in our app
-              ap.getDataFromFirestore().then(
-                    (value) => ap.saveUserDataToSP().then(
-                          (value) => ap.setSignIn().then(
-                                (value) => Navigator.pushAndRemoveUntil(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => const HomeScreen(),
-                                    ),
-                                    (route) => false),
-                              ),
-                        ),
-                  );
-            } else {
-              // new user
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const UserInfromationScreen()),
-                  (route) => false);
-            }
+            Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HomeScreen(),
+                ),
+                (route) => false);
           },
         );
       },

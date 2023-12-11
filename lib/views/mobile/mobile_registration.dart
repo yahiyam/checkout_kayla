@@ -3,7 +3,7 @@ import 'package:checkout/utils/widgets/button.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../../viewmodels/auth_viewmodel.dart';
+import '../../viewmodels/auth/auth_phone.dart';
 import '../../viewmodels/base_viewmodel.dart';
 
 class MobileRegistration extends StatelessWidget {
@@ -11,10 +11,10 @@ class MobileRegistration extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final phoneProvider = Provider.of<PhoneProvider>(context);
+    final phoneProvider = Provider.of<PhoneNumberProvider>(context);
     
     void sendPhoneNumber() {
-      final ap = Provider.of<AuthProvider>(context, listen: false);
+      final ap = Provider.of<AuthPhoneProvider>(context, listen: false);
       String phoneNumber = phoneProvider.controller.text.trim();
       ap.signInWithPhone(context, "+91$phoneNumber");
     }

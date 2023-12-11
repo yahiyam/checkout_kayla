@@ -1,18 +1,16 @@
-import 'dart:convert';
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/user_model.dart';
-import '../utils/constants/app_texts.dart';
-import '../utils/functions/snackbar.dart';
-import '../views/mobile/otp_screen.dart';
+import '../../models/user_model.dart';
+import '../../utils/functions/snackbar.dart';
+import '../../views/mobile/otp_screen.dart';
 
-class AuthProvider extends ChangeNotifier {
+class AuthPhoneProvider extends ChangeNotifier {
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
   bool _isLoading = false;
@@ -26,22 +24,7 @@ class AuthProvider extends ChangeNotifier {
   final FirebaseFirestore _firebaseFirestore = FirebaseFirestore.instance;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
 
-  AuthProvider() {
-    checkSigned();
-  }
-
-  void checkSigned() async {
-    final SharedPreferences sp = await SharedPreferences.getInstance();
-    _isSignedIn = sp.getBool(SharedKeys.isSigned) ?? false;
-    notifyListeners();
-  }
-
-  Future setSignIn() async {
-    final SharedPreferences s = await SharedPreferences.getInstance();
-    s.setBool("is_signedin", true);
-    _isSignedIn = true;
-    notifyListeners();
-  }
+  AuthPhoneProvider();
 
   // signin
   Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
@@ -108,10 +91,10 @@ class AuthProvider extends ChangeNotifier {
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection("users").doc(_uid).get();
     if (snapshot.exists) {
-      print("USER EXISTS");
+      log("USER EXISTS");
       return true;
     } else {
-      print("NEW USER");
+      log("NEW USER");
       return false;
     }
   }
@@ -160,44 +143,29 @@ class AuthProvider extends ChangeNotifier {
     return downloadUrl;
   }
 
-  Future getDataFromFirestore() async {
-    await _firebaseFirestore
-        .collection("users")
-        .doc(_firebaseAuth.currentUser!.uid)
-        .get()
-        .then((DocumentSnapshot snapshot) {
-      _userModel = UserModel(
-        name: snapshot['name'],
-        email: snapshot['email'],
-        createdAt: snapshot['createdAt'],
-        bio: snapshot['bio'],
-        uid: snapshot['uid'],
-        profilePic: snapshot['profilePic'],
-        phoneNumber: snapshot['phoneNumber'],
-      );
-      _uid = userModel.uid;
-    });
-  }
-
-  // STORING DATA LOCALLY
-  Future saveUserDataToSP() async {
-    SharedPreferences s = await SharedPreferences.getInstance();
-    await s.setString("user_model", jsonEncode(userModel.toMap()));
-  }
-
-  Future getDataFromSP() async {
-    SharedPreferences s = await SharedPreferences.getInstance();
-    String data = s.getString("user_model") ?? '';
-    _userModel = UserModel.fromMap(jsonDecode(data));
-    _uid = _userModel!.uid;
-    notifyListeners();
-  }
+  // Future getDataFromFirestore() async {
+  //   await _firebaseFirestore
+  //       .collection("users")
+  //       .doc(_firebaseAuth.currentUser!.uid)
+  //       .get()
+  //       .then((DocumentSnapshot snapshot) {
+  //     _userModel = UserModel(
+  //       name: snapshot['name'],
+  //       email: snapshot['email'],
+  //       createdAt: snapshot['createdAt'],
+  //       bio: snapshot['bio'],
+  //       uid: snapshot['uid'],
+  //       profilePic: snapshot['profilePic'],
+  //       phoneNumber: snapshot['phoneNumber'],
+  //     );
+  //     _uid = userModel.uid;
+  //   });
+  // }
 
   Future userSignOut() async {
-    SharedPreferences s = await SharedPreferences.getInstance();
     await _firebaseAuth.signOut();
     _isSignedIn = false;
+
     notifyListeners();
-    s.clear();
   }
 }
