@@ -1,9 +1,18 @@
 import 'package:checkout/utils/functions/next_screen.dart';
+import 'package:checkout/viewmodels/auth/auth_email_sign_up.dart';
 import 'package:checkout/viewmodels/auth/auth_google.dart';
 import 'package:checkout/viewmodels/auth/auth_phone.dart';
+import 'package:checkout/viewmodels/student_viewmodel.dart';
 import 'package:checkout/views/auth/login_page.dart';
+import 'package:checkout/views/student/add_student.dart';
+import 'package:checkout/views/student/filter_student.dart';
+import 'package:checkout/views/student/search_student.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import '../../models/student.dart';
+import '../student/widgets/student_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -12,115 +21,97 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final gAP = Provider.of<AuthGoogleProvider>(context);
     final pAP = Provider.of<AuthPhoneProvider>(context);
+    final eAP = Provider.of<AuthEmailSignUpProvider>(context);
 
     return Scaffold(
-      body: Center(
-          child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          ElevatedButton(
+      appBar: AppBar(
+        actions: [
+          IconButton(
+            onPressed: () {
+              nextScreen(context: context, page: const StudentFilterPage());
+            },
+            icon: const Icon(Icons.filter_alt_outlined),
+          ),
+          IconButton(
+            onPressed: () {
+              nextScreen(context: context, page: const StudentSearch());
+            },
+            icon: const Icon(Icons.search),
+          ),
+          IconButton(
             onPressed: () {
               pAP.userSignOut();
               gAP.userSignOut();
+              eAP.userSignOut();
               nextScreenReplace(context: context, page: const LoginScreen());
             },
-            child: const Text(
-              "SIGNOUT",
-              style: TextStyle(
-                color: Colors.white,
-              ),
-            ),
-          )
+            icon: const Icon(Icons.exit_to_app),
+          ),
         ],
-      )),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Consumer<StudentViewModel>(
+          builder: (context, model, child) {
+            return StreamBuilder(
+              stream:
+                  FirebaseFirestore.instance.collection('students').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.sentiment_dissatisfied,
+                          color: Colors.blueGrey,
+                          size: 150,
+                        ),
+                        SizedBox(height: 10),
+                        Text(
+                          'No students available',
+                          style: TextStyle(
+                            color: Colors.blueGrey,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  final students = snapshot.data!.docs
+                      .map((doc) => Student.fromSnapshot(doc))
+                      .toList();
+
+                  return ListView.builder(
+                    itemCount: students.length,
+                    itemBuilder: (context, index) {
+                      Student student = students[index];
+                      return StudentCard(
+                        student: student,
+                        showDelete: true,
+                      );
+                    },
+                  );
+                }
+              },
+            );
+          },
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          nextScreen(
+            context: context,
+            page: const AddStudentPage(),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
-
-// Consumer<ImagesProvider>(
-//   builder: (context, imageProvider, _) => Column(
-//     children: [
-//       Stack(
-//         alignment: AlignmentDirectional.bottomEnd,
-//         children: [
-//           CircleAvatar(
-//             radius: 70,
-//             backgroundColor: AppColors.splash,
-//             backgroundImage: imageProvider.imageXFile ==
-//                     null
-//                 ? null
-//                 : FileImage(File(
-//                     imageProvider.imageXFile!.path)),
-//             child: imageProvider.imageXFile == null
-//                 ? const Icon(
-//                     Icons.person,
-//                     color: AppColors.neutral,
-//                     size: 110,
-//                   )
-//                 : null,
-//           ),
-//           CircleAvatar(
-//             backgroundColor: AppColors.primary,
-//             child: imageProvider.imageXFile == null
-//                 ? IconButton(
-//                     onPressed: () {
-//                       showImageSourceDialog();
-//                     },
-//                     // imageProvider.pickGalleryImage(),
-//                     icon: const Icon(
-//                       Icons.touch_app,
-//                       color: AppColors.neutral,
-//                     ))
-//                 : IconButton(
-//                     onPressed: () =>
-//                         imageProvider.clearImage(),
-//                     icon: const Icon(
-//                       Icons.clear,
-//                       color: AppColors.neutral,
-//                     )),
-//           ),
-//         ],
-//       ),
-//       const SizedBox(height: 10)
-//     ],
-//   ),
-// ),
-
-// final ImagesProvider imageProvider =
-//     Provider.of<ImagesProvider>(context, listen: false);
-// Future<void> showImageSourceDialog() async {
-//   return showDialog(
-//     context: context,
-//     builder: (BuildContext context) {
-//       return AlertDialog(
-//         title: const Text('Select Image Source'),
-//         content: Column(
-//           mainAxisSize: MainAxisSize.min,
-//           children: <Widget>[
-//             Padding(
-//               padding: const EdgeInsets.symmetric(vertical: 8.0),
-//               child: ElevatedButton(
-//                 onPressed: () {
-//                   Navigator.of(context).pop();
-//                   imageProvider.pickCameraImage();
-//                 },
-//                 child: const Text('Camera'),
-//               ),
-//             ),
-//             Padding(
-//               padding: const EdgeInsets.symmetric(vertical: 8.0),
-//               child: ElevatedButton(
-//                 onPressed: () {
-//                   Navigator.of(context).pop();
-//                   imageProvider.pickGalleryImage();
-//                 },
-//                 child: const Text('Gallery'),
-//               ),
-//             ),
-//           ],
-//         ),
-//       );
-//     },
-//   );
-// }

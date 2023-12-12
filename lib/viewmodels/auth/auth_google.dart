@@ -6,14 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthGoogleProvider extends ChangeNotifier {
-  // instance of firebaseauth and google
   final FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
   bool _isSignedIn = false;
   bool get isSignedIn => _isSignedIn;
 
-  //hasError, errorCode, provider,uid, email, name, imageUrl
   bool _hasError = false;
   bool get hasError => _hasError;
 
@@ -36,13 +34,12 @@ class AuthGoogleProvider extends ChangeNotifier {
   String? get imageUrl => _imageUrl;
 
   AuthGoogleProvider();
-  // sign in with google
+
   Future signInWithGoogle() async {
     final GoogleSignInAccount? googleSignInAccount =
         await googleSignIn.signIn();
 
     if (googleSignInAccount != null) {
-      // executing our authentication
       try {
         final GoogleSignInAuthentication googleSignInAuthentication =
             await googleSignInAccount.authentication;
@@ -51,11 +48,9 @@ class AuthGoogleProvider extends ChangeNotifier {
           idToken: googleSignInAuthentication.idToken,
         );
 
-        // signing to firebase user instance
         final User userDetails =
             (await firebaseAuth.signInWithCredential(credential)).user!;
 
-        // now save all values
         _name = userDetails.displayName;
         _email = userDetails.email;
         _imageUrl = userDetails.photoURL;
@@ -88,7 +83,6 @@ class AuthGoogleProvider extends ChangeNotifier {
     }
   }
 
-  // ENTRY FOR CLOUDFIRESTORE
   Future getUserDataFromFirestore(uid) async {
     await FirebaseFirestore.instance
         .collection("users")
@@ -116,7 +110,6 @@ class AuthGoogleProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // checkUser exists or not in cloudfirestore
   Future<bool> checkUserExists() async {
     DocumentSnapshot snap =
         await FirebaseFirestore.instance.collection('users').doc(_uid).get();
@@ -129,13 +122,11 @@ class AuthGoogleProvider extends ChangeNotifier {
     }
   }
 
-  // signout
   Future userSignOut() async {
     firebaseAuth.signOut;
     await googleSignIn.signOut();
 
     _isSignedIn = false;
     notifyListeners();
-    // clear all storage information
   }
 }

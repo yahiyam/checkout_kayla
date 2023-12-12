@@ -8,6 +8,9 @@ class CustomField extends StatelessWidget {
     super.key,
     this.hintText,
     this.controller,
+    this.validator,
+    this.initialValue,
+    this.onSaved,
     this.keyboardType,
     this.obscureText = false,
     this.showSuffixIcon = false,
@@ -18,6 +21,9 @@ class CustomField extends StatelessWidget {
   final TextEditingController? controller;
   final TextInputType? keyboardType;
   final bool? showSuffixIcon;
+  final String? initialValue;
+  final String? Function(String?)? validator;
+  final Function(String?)? onSaved;
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +33,9 @@ class CustomField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText! && !obscure.passwordVisible,
           keyboardType: keyboardType,
+          validator: validator,
+          onSaved: onSaved,
+          initialValue: initialValue,
           onChanged: (value) => obscure.toggleTyped(value),
           decoration: InputDecoration(
             hintText: hintText,

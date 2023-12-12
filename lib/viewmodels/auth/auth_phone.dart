@@ -26,7 +26,6 @@ class AuthPhoneProvider extends ChangeNotifier {
 
   AuthPhoneProvider();
 
-  // signin
   Future<void> signInWithPhone(BuildContext context, String phoneNumber) async {
     try {
       await _firebaseAuth.verifyPhoneNumber(
@@ -54,7 +53,6 @@ class AuthPhoneProvider extends ChangeNotifier {
     }
   }
 
-  // verify otp
   void verifyOtp({
     required BuildContext context,
     required String verificationId,
@@ -71,7 +69,6 @@ class AuthPhoneProvider extends ChangeNotifier {
       User? user = (await _firebaseAuth.signInWithCredential(creds)).user;
 
       if (user != null) {
-        // carry our logic
         _uid = user.uid;
         onSuccess();
       }
@@ -86,7 +83,6 @@ class AuthPhoneProvider extends ChangeNotifier {
     }
   }
 
-  // DATABASE OPERTAIONS
   Future<bool> checkExistingUser() async {
     DocumentSnapshot snapshot =
         await _firebaseFirestore.collection("users").doc(_uid).get();
@@ -108,16 +104,11 @@ class AuthPhoneProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      // uploading image to firebase storage.
       await storeFileToStorage("profilePic/$_uid", profilePic).then((value) {
-        userModel.profilePic = value;
-        userModel.createdAt = DateTime.now().millisecondsSinceEpoch.toString();
-        userModel.phoneNumber = _firebaseAuth.currentUser!.phoneNumber!;
         userModel.uid = _firebaseAuth.currentUser!.phoneNumber!;
       });
       _userModel = userModel;
 
-      // uploading to database
       await _firebaseFirestore
           .collection("users")
           .doc(_uid)
@@ -142,25 +133,6 @@ class AuthPhoneProvider extends ChangeNotifier {
     String downloadUrl = await snapshot.ref.getDownloadURL();
     return downloadUrl;
   }
-
-  // Future getDataFromFirestore() async {
-  //   await _firebaseFirestore
-  //       .collection("users")
-  //       .doc(_firebaseAuth.currentUser!.uid)
-  //       .get()
-  //       .then((DocumentSnapshot snapshot) {
-  //     _userModel = UserModel(
-  //       name: snapshot['name'],
-  //       email: snapshot['email'],
-  //       createdAt: snapshot['createdAt'],
-  //       bio: snapshot['bio'],
-  //       uid: snapshot['uid'],
-  //       profilePic: snapshot['profilePic'],
-  //       phoneNumber: snapshot['phoneNumber'],
-  //     );
-  //     _uid = userModel.uid;
-  //   });
-  // }
 
   Future userSignOut() async {
     await _firebaseAuth.signOut();

@@ -135,7 +135,6 @@ class _OtpScreenState extends State<OtpScreen> {
     );
   }
 
-  // verify otp
   void verifyOtp(BuildContext context, String userOtp) {
     final ap = Provider.of<AuthPhoneProvider>(context, listen: false);
     ap.verifyOtp(
@@ -143,7 +142,6 @@ class _OtpScreenState extends State<OtpScreen> {
       verificationId: widget.verificationId,
       userOtp: userOtp,
       onSuccess: () {
-        // checking whether user exists in the db
         ap.checkExistingUser().then(
           (value) async {
             Navigator.pushAndRemoveUntil(

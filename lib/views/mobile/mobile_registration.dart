@@ -12,7 +12,7 @@ class MobileRegistration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final phoneProvider = Provider.of<PhoneNumberProvider>(context);
-    
+
     void sendPhoneNumber() {
       final ap = Provider.of<AuthPhoneProvider>(context, listen: false);
       String phoneNumber = phoneProvider.controller.text.trim();

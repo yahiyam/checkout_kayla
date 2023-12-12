@@ -2,6 +2,7 @@ import 'package:checkout/utils/constants/app_colors.dart';
 import 'package:checkout/utils/constants/app_images.dart';
 import 'package:checkout/utils/constants/app_texts.dart';
 import 'package:checkout/utils/widgets/button.dart';
+import 'package:checkout/viewmodels/auth/auth_email_sign_up.dart';
 import 'package:checkout/viewmodels/auth/auth_google.dart';
 import 'package:checkout/viewmodels/base_viewmodel.dart';
 import 'package:checkout/views/auth/login_page.dart';
@@ -20,8 +21,6 @@ class SignUpScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-    // handle after signin
     handleAfterSignIn() {
       Future.delayed(const Duration(milliseconds: 1000)).then((value) {
         nextScreenReplace(context: context, page: const HomeScreen());
@@ -42,15 +41,12 @@ class SignUpScreen extends StatelessWidget {
           if (sp.hasError == true) {
             openSnackbar(context, sp.errorCode.toString(), Colors.red);
           } else {
-            // checking whether user exists or not
             sp.checkUserExists().then((value) async {
               if (value == true) {
-                // user exists
                 await sp.getUserDataFromFirestore(sp.uid).then((value) {
                   handleAfterSignIn();
                 });
               } else {
-                // user does not exist
                 sp.saveDataToFirestore().then((value) {
                   handleAfterSignIn();
                 });
@@ -81,35 +77,68 @@ class SignUpScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 120),
-                Column(
-                  children: [
-                    Form(
-                      // key: signUpProvider.registrationFormKey,
-                      child: Column(
-                        children: [
-                          const CustomField(
-                            hintText: 'enter Email',
-                            // controller: signUpProvider.emailController,
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          const SizedBox(height: 10),
-                          const CustomField(
-                            hintText: 'enter Password',
-                            obscureText: true,
-                            // controller: signUpProvider.passwordController,
-                            showSuffixIcon: true,
-                          ),
-                          const SizedBox(height: 138),
-                          CustomButton(
-                            text: 'Sign Up',
-                            onTap: () {},
-                          ),
-                          const SizedBox(height: 30),
-                        ],
+                Consumer<AuthEmailSignUpProvider>(
+                    builder: (context, signUpProvider, _) {
+                  return Column(
+                    children: [
+                      Form(
+                        key: signUpProvider.formKey,
+                        child: Column(
+                          children: [
+                            CustomField(
+                              hintText: 'enter Email',
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return ("Please Enter Your Email");
+                                }
+                                if (!RegExp(
+                                        "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                                    .hasMatch(value)) {
+                                  return ("Please Enter a valid email");
+                                }
+                                return null;
+                              },
+                              onSaved: (p0) {
+                                signUpProvider.emailController.text = p0!;
+                              },
+                              controller: signUpProvider.emailController,
+                              keyboardType: TextInputType.emailAddress,
+                            ),
+                            const SizedBox(height: 10),
+                            CustomField(
+                              hintText: 'enter Password',
+                              obscureText: true,
+                              controller: signUpProvider.passwordController,
+                              showSuffixIcon: true,
+                              validator: (value) {
+                                RegExp regex = RegExp(r'^.{6,}$');
+                                if (value!.isEmpty) {
+                                  return ("Password is required for login");
+                                }
+                                if (!regex.hasMatch(value)) {
+                                  return ("Enter Valid Password(Min. 6 Character)");
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 138),
+                            CustomButton(
+                              text: 'Sign Up',
+                              onTap: () {
+                                signUpProvider.signUp(
+                                  context,
+                                  signUpProvider.emailController.text,
+                                  signUpProvider.passwordController.text,
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 30),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  );
+                }),
                 const Text(
                   'Sign Up With',
                   style: TextStyle(

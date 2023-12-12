@@ -2,6 +2,7 @@ import 'package:checkout/utils/constants/app_colors.dart';
 import 'package:checkout/utils/constants/app_images.dart';
 import 'package:checkout/utils/constants/app_texts.dart';
 import 'package:checkout/utils/widgets/button.dart';
+import 'package:checkout/viewmodels/auth/auth_email_log_in.dart';
 import 'package:checkout/viewmodels/auth/auth_google.dart';
 import 'package:checkout/viewmodels/base_viewmodel.dart';
 import 'package:checkout/views/auth/sign_up_page.dart';
@@ -20,7 +21,6 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // handle after signin
     handleAfterSignIn() {
       Future.delayed(const Duration(milliseconds: 1000)).then((value) {
         nextScreenReplace(context: context, page: const HomeScreen());
@@ -41,15 +41,12 @@ class LoginScreen extends StatelessWidget {
           if (sp.hasError == true) {
             openSnackbar(context, sp.errorCode.toString(), Colors.red);
           } else {
-            // checking whether user exists or not
             sp.checkUserExists().then((value) async {
               if (value == true) {
-                // user exists
                 await sp.getUserDataFromFirestore(sp.uid).then((value) {
                   handleAfterSignIn();
                 });
               } else {
-                // user does not exist
                 sp.saveDataToFirestore().then((value) {
                   handleAfterSignIn();
                 });
@@ -80,47 +77,83 @@ class LoginScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 120),
-                Form(
-                  // key: loginProvider.loginFormKey,
-                  child: Column(
-                    children: [
-                      const CustomField(
-                        hintText: 'Username',
-                        // controller: loginProvider.emailController,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 20),
-                      const CustomField(
-                        hintText: 'Password',
-                        obscureText: true,
-                        // controller: loginProvider.passwordController,
-                        showSuffixIcon: true,
-                      ),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          style: const ButtonStyle(
-                            splashFactory: NoSplash.splashFactory,
-                          ),
-                          onPressed: () {},
-                          child: const Text(
-                            'Forgot Password ? ',
-                            style: TextStyle(
-                              color: Colors.redAccent,
-                              fontWeight: FontWeight.w500,
+                Consumer<AuthEmailLogInProvider>(
+                    builder: (context, loginProvider, _) {
+                  return Form(
+                    key: loginProvider.formKey,
+                    child: Column(
+                      children: [
+                        CustomField(
+                          hintText: 'Username',
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return ("Please Enter Your Email");
+                            }
+                            if (!RegExp(
+                                    "^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]")
+                                .hasMatch(value)) {
+                              return ("Please Enter a valid email");
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            loginProvider.emailController.text = value!;
+                          },
+                          controller: loginProvider.emailController,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        const SizedBox(height: 20),
+                        CustomField(
+                          hintText: 'Password',
+                          obscureText: true,
+                          controller: loginProvider.passwordController,
+                          showSuffixIcon: true,
+                          validator: (value) {
+                            RegExp regex = RegExp(r'^.{6,}$');
+                            if (value!.isEmpty) {
+                              return ("Password is required for login");
+                            }
+                            if (!regex.hasMatch(value)) {
+                              return ("Enter Valid Password(Min. 6 Character)");
+                            }
+                            return null;
+                          },
+                          onSaved: (value) {
+                            loginProvider.passwordController.text = value!;
+                          },
+                        ),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: TextButton(
+                            style: const ButtonStyle(
+                              splashFactory: NoSplash.splashFactory,
+                            ),
+                            onPressed: () {},
+                            child: const Text(
+                              'Forgot Password ? ',
+                              style: TextStyle(
+                                color: Colors.redAccent,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 80),
-                      CustomButton(
-                        text: 'Login',
-                        onTap: () {},
-                      ),
-                      const SizedBox(height: 30),
-                    ],
-                  ),
-                ),
+                        const SizedBox(height: 80),
+                        CustomButton(
+                          text: 'Login',
+                          onTap: () {
+                            loginProvider.logIn(
+                              context,
+                              loginProvider.emailController.text.trim(),
+                              loginProvider.passwordController.text.trim(),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                      ],
+                    ),
+                  );
+                }),
                 const Text(
                   'Login With',
                   style: TextStyle(
