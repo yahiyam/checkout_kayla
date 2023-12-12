@@ -10,7 +10,7 @@ class CustomButton extends StatelessWidget {
 
   final String text;
   final Function onTap;
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -22,7 +22,7 @@ class CustomButton extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(25),
-          splashColor: AppColors.primary, 
+          splashColor: AppColors.primary,
           onTap: () {
             onTap();
           },
@@ -31,7 +31,7 @@ class CustomButton extends StatelessWidget {
               color: AppColors.buttonColor,
               borderRadius: BorderRadius.circular(25),
             ),
-            height: 40,
+            height: 45,
             child: Center(
               child: Text(
                 text,
